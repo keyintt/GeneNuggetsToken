@@ -1,0 +1,33 @@
+{
+  "name": "gnstoken",
+  "version": "1.0.0",
+  "description": "ERC20 Contract of Gene Nuggets Token",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "babel-register": "^6.26.0",
+    "zeppelin-solidity": "^1.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keyintt/GNSToken.git"
+  },
+  "keywords": [
+    "ERC20",
+    "gene",
+    "token"
+  ],
+  "author": "liuyi",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/keyintt/GNSToken/issues"
+  },
+  "homepage": "https://github.com/keyintt/GNSToken#readme"
+}
