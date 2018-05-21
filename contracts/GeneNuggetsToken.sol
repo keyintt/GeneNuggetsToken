@@ -19,15 +19,15 @@ contract GeneNuggetsToken is Pausable,StandardToken {
   //constants
   uint8 public decimals = 6;
   uint256 public decimalFactor = 10 ** uint256(decimals);
-  uint public CAP = 30e8 * decimalFactor; //Maximal GTN supply = 3 billion
+  uint public CAP = 30e8 * decimalFactor; //Maximal GNUG supply = 3 billion
   
   //contract state
   uint256 public circulatingSupply;
   uint256 public totalUsers;
-  uint256 public injectLimit = 10000*decimalFactor;
-  uint256 public injectThreshold = 100*decimalFactor;
-  uint256 public injectInterval = 60;
-  uint256 public extractThreshold = 100*decimalFactor;
+  uint256 public exchangeLimit = 10000*decimalFactor;
+  uint256 public exchangeThreshold = 100*decimalFactor;
+  uint256 public exchangeInterval = 60;
+  uint256 public destroyThreshold = 100*decimalFactor;
  
   //managers address
   address public CFO; //CFO address
@@ -38,9 +38,9 @@ contract GeneNuggetsToken is Pausable,StandardToken {
   uint[9] public MINING_REWARDS = [1000*decimalFactor,600*decimalFactor,300*decimalFactor,200*decimalFactor,180*decimalFactor,160*decimalFactor,60*decimalFactor,39*decimalFactor,0];
   
   //events
-  event Mine(uint totalUser,uint totalSupply);
-  event Inject(address indexed user,uint256 amount);
-  event Extract(address indexed user,uint256 amount);
+  event UpdateTotal(uint totalUser,uint totalSupply);
+  event Exchange(address indexed user,uint256 amount);
+  event Destory(address indexed user,uint256 amount);
   event Approval(address indexed owner, address indexed spender, uint256 value);
   event Transfer(address indexed from, address indexed to, uint256 value);
 
@@ -96,35 +96,35 @@ contract GeneNuggetsToken is Pausable,StandardToken {
   }
   
   /**
-   * @dev Allows owner to change injectInterval.
+   * @dev Allows owner to change exchangeInterval.
    * @param newInterval The new interval to change to.
    */
-  function setInjectInterval(uint newInterval) external onlyOwner {
-    injectInterval = newInterval;
+  function setExchangeInterval(uint newInterval) external onlyOwner {
+    exchangeInterval = newInterval;
   }
 
   /**
-   * @dev Allows owner to change injectLimit.
+   * @dev Allows owner to change exchangeLimit.
    * @param newLimit The new limit to change to.
    */
-  function setInjectLimit(uint newLimit) external onlyOwner {
-    injectLimit = newLimit;
+  function setExchangeLimit(uint newLimit) external onlyOwner {
+    exchangeLimit = newLimit;
   }
 
   /**
-   * @dev Allows owner to change injectThreshold.
+   * @dev Allows owner to change exchangeThreshold.
    * @param newThreshold The new threshold to change to.
    */
-  function setInjectThreshold(uint newThreshold) external onlyOwner {
-    injectThreshold = newThreshold;
+  function setExchangeThreshold(uint newThreshold) external onlyOwner {
+    exchangeThreshold = newThreshold;
   }
   
   /**
-   * @dev Allows owner to change extractThreshold.
+   * @dev Allows owner to change destroyThreshold.
    * @param newThreshold The new threshold to change to.
    */
-  function setExtractThreshold(uint newThreshold) external onlyOwner {
-    extractThreshold = newThreshold;
+  function setDestroyThreshold(uint newThreshold) external onlyOwner {
+    destroyThreshold = newThreshold;
   }
   
   /**
@@ -144,10 +144,10 @@ contract GeneNuggetsToken is Pausable,StandardToken {
   }
 
   /**
-   * @dev Function to allow CFO mine tokens according to user amount.Attention: newly mined token still outside contract until injected on user's requirments.  
+   * @dev Function to allow CFO update tokens amount according to user amount.Attention: newly mined token still outside contract until exchange on user's requirments.  
    * @param _userAmount current gene nuggets user amount.
    */
-  function mine(uint256 _userAmount) onlyCFO external {
+  function updateTotal(uint256 _userAmount) onlyCFO external {
     require(_userAmount>totalUsers);
     uint newTotalSupply = calTotalSupply(_userAmount);
     require(newTotalSupply<=CAP && newTotalSupply>totalSupply_);
@@ -155,7 +155,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
     uint _amount = newTotalSupply.sub(totalSupply_);
     totalSupply_ = newTotalSupply;
     totalUsers = _userAmount;
-    Mine(_amount,totalSupply_); 
+    UpdateTotal(_amount,totalSupply_); 
   }
 
   /**
@@ -176,15 +176,15 @@ contract GeneNuggetsToken is Pausable,StandardToken {
   }
 
   /**
-   * @dev Function for Customer Service exchange off-chain points to GNT on user's behalf. That is to say inject GNT into this contract.
+   * @dev Function for Customer Service exchange off-chain points to GNUG on user's behalf. That is to say exchange GNUG into this contract.
    * @param user The user tokens distributed to.
    * @param _amount The amount of tokens to exchange.
    */
-  function inject(address user,uint256 _amount) whenNotPaused onlyCustomerService external {
+  function exchange(address user,uint256 _amount) whenNotPaused onlyCustomerService external {
   	
-  	require((block.timestamp-CustomerService[msg.sender])>injectInterval);
+  	require((block.timestamp-CustomerService[msg.sender])>exchangeInterval);
 
-  	require(_amount <= injectLimit && _amount >= injectThreshold);
+  	require(_amount <= exchangeLimit && _amount >= exchangeThreshold);
 
     circulatingSupply = circulatingSupply.add(_amount);
     
@@ -192,7 +192,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
     
     CustomerService[msg.sender] = block.timestamp;
     
-    Inject(user,_amount);
+    Exchange(user,_amount);
     
     Transfer(address(0),user,_amount);
     
@@ -200,17 +200,17 @@ contract GeneNuggetsToken is Pausable,StandardToken {
   
 
   /**
-   * @dev Function for user can exchange GNT back to off-chain points.That is to say extract GNT out of this contract.
-   * @param _amount The amount of tokens to exchange.
+   * @dev Function for user can destory GNUG, exchange back to off-chain points.That is to say destroy GNUG out of this contract.
+   * @param _amount The amount of tokens to destory.
    */
-  function extract(uint256 _amount) external {  
-    require(balances[msg.sender]>=_amount && _amount>extractThreshold && circulatingSupply>=_amount);
+  function destory(uint256 _amount) external {  
+    require(balances[msg.sender]>=_amount && _amount>destroyThreshold && circulatingSupply>=_amount);
 
     circulatingSupply = circulatingSupply.sub(_amount);
     
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     
-    Extract(msg.sender,_amount);
+    Destory(msg.sender,_amount);
     
     Transfer(msg.sender,0x0,_amount);
     
