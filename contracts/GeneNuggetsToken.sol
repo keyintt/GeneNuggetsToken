@@ -13,8 +13,8 @@ import 'zeppelin-solidity/contracts/token/ERC20/StandardToken.sol';
 contract GeneNuggetsToken is Pausable,StandardToken {
   using SafeMath for uint256;
   
-  string public name = "Gene Nuggets Token";
-  string public symbol = "GNUT";
+  string public name = "Gene Nuggets";
+  string public symbol = "GNUG";
    
   //constants
   uint8 public decimals = 6;
