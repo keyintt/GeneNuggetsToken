@@ -14,7 +14,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
   using SafeMath for uint256;
   
   string public name = "Gene Nuggets";
-  string public symbol = "GNUG";
+  string public symbol = "GNUS";
    
   //constants
   uint8 public decimals = 6;
@@ -41,8 +41,6 @@ contract GeneNuggetsToken is Pausable,StandardToken {
   event UpdateTotal(uint totalUser,uint totalSupply);
   event Exchange(address indexed user,uint256 amount);
   event Destory(address indexed user,uint256 amount);
-  event Approval(address indexed owner, address indexed spender, uint256 value);
-  event Transfer(address indexed from, address indexed to, uint256 value);
 
   modifier onlyCFO() {
     require(msg.sender == CFO);
