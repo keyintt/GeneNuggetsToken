@@ -312,7 +312,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
   uint256 public circulatingSupply;
   uint256 public totalUsers;
   uint256 public exchangeLimit = 10000*decimalFactor;
-  uint256 public exchangeThreshold = 100*decimalFactor;
+  uint256 public exchangeThreshold = 2000*decimalFactor;
   uint256 public exchangeInterval = 60;
   uint256 public destroyThreshold = 100*decimalFactor;
  
