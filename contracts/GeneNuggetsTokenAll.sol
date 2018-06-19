@@ -334,10 +334,6 @@ contract GeneNuggetsToken is Pausable,StandardToken {
     _;
   }
 
-  modifier nonZeroAddress(address a){
-    require(a != address(0));
-    _;
-  }
 
   modifier onlyCustomerService() {
     require(CustomerService[msg.sender] != 0);
@@ -376,7 +372,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
    * @dev Allows the current owner to change CFO address.
    * @param newCFO The address to change to.
    */
-  function setCFO(address newCFO) external onlyOwner nonZeroAddress(newCFO){
+  function setCFO(address newCFO) external onlyOwner {
     CFO = newCFO;
   }
   
@@ -384,7 +380,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
    * @dev Allows owner to change exchangeInterval.
    * @param newInterval The new interval to change to.
    */
-  function setExchangeInterval(uint newInterval) external onlyOwner {
+  function setExchangeInterval(uint newInterval) external onlyCFO {
     exchangeInterval = newInterval;
   }
 
@@ -392,7 +388,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
    * @dev Allows owner to change exchangeLimit.
    * @param newLimit The new limit to change to.
    */
-  function setExchangeLimit(uint newLimit) external onlyOwner {
+  function setExchangeLimit(uint newLimit) external onlyCFO {
     exchangeLimit = newLimit;
   }
 
@@ -400,7 +396,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
    * @dev Allows owner to change exchangeThreshold.
    * @param newThreshold The new threshold to change to.
    */
-  function setExchangeThreshold(uint newThreshold) external onlyOwner {
+  function setExchangeThreshold(uint newThreshold) external onlyCFO {
     exchangeThreshold = newThreshold;
   }
   
@@ -408,7 +404,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
    * @dev Allows owner to change destroyThreshold.
    * @param newThreshold The new threshold to change to.
    */
-  function setDestroyThreshold(uint newThreshold) external onlyOwner {
+  function setDestroyThreshold(uint newThreshold) external onlyCFO {
     destroyThreshold = newThreshold;
   }
   
@@ -416,7 +412,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
    * @dev Allows CFO to add customer service address.
    * @param cs The address to add.
    */
-  function addCustomerService(address cs) onlyCFO nonZeroAddress(cs) external {
+  function addCustomerService(address cs) onlyCFO external {
     CustomerService[cs] = block.timestamp;
   }
   

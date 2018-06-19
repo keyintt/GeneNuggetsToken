@@ -47,10 +47,6 @@ contract GeneNuggetsToken is Pausable,StandardToken {
     _;
   }
 
-  modifier nonZeroAddress(address a){
-    require(a != address(0));
-    _;
-  }
 
   modifier onlyCustomerService() {
     require(CustomerService[msg.sender] != 0);
@@ -89,7 +85,7 @@ contract GeneNuggetsToken is Pausable,StandardToken {
    * @dev Allows the current owner to change CFO address.
    * @param newCFO The address to change to.
    */
-  function setCFO(address newCFO) external onlyOwner nonZeroAddress(newCFO){
+  function setCFO(address newCFO) external onlyOwner{
     CFO = newCFO;
   }
   
@@ -209,8 +205,6 @@ contract GeneNuggetsToken is Pausable,StandardToken {
     balances[msg.sender] = balances[msg.sender].sub(_amount);
     
     Destory(msg.sender,_amount);
-    
-    Transfer(msg.sender,0x0,_amount);
     
   }
 
